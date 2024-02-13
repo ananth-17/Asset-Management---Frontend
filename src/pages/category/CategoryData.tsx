@@ -53,7 +53,7 @@ const TableReact = (props: TableProps) => {
   };
   
   return (
-    <div className="min-h-min h-full bg-white flex items-center justify-center pb-14">
+    <div className="min-h-min h-full bg-white flex items-center justify-center pb-8">
       <div className="w-full mt-3">
         <div className="flex justify-between px-4 mt-2 my-6 py-1">
           <div className="px-2 bg-gray-2 py-1 rounded-lg w-[60%] border border-slate-300">
@@ -119,7 +119,7 @@ const TableReact = (props: TableProps) => {
               NEW</button>
           </div>
         </div>
-        <div className="w-full overflow-x-auto md:overflow-auto max-w-7xl 2xl:max-w-none">
+        <div className="w-full overflow-x-auto md:overflow-auto max-w-full 2xl:max-w-none">
           <table className="table-auto overflow-scroll md:overflow-auto w-full text-left font-inter border-b border-slate-300">
             <TableHead tableHeadColumns={props.tableHeadColumns}/>
             <tbody >
@@ -130,19 +130,19 @@ const TableReact = (props: TableProps) => {
                     }`}
                   key={index}
                 >
-                  <td className={`py-3 px-4 font-normal text-base whitespace-nowrap`}>
+                  <td className={`py-3 pl-7 pr-1 font-normal text-base whitespace-nowrap`}>
                     {data.id}
                   </td>
-                  <td className={`py-3 px-4 font-normal text-base whitespace-nowrap`}>
+                  <td className={`py-3 pl-7 pr-1 font-normal text-base whitespace-nowrap`}>
                     {data.name}
                   </td>
-                  <td className={`py-3 px-4 font-normal text-base whitespace-nowrap`}>
+                  <td className={`py-3 pl-7 pr-1 font-normal text-base whitespace-nowrap`}>
                     {data?.code}
                   </td>
-                  <td className={`py-3 px-4 text-base font-normal whitespace-nowrap`}>
+                  <td className={`py-3 pl-7 pr-1 text-base font-normal whitespace-nowrap`}>
                     {data?.count}
                   </td>
-                  <td className={`py-3 px-4 text-base font-normal whitespace-nowrap`}>
+                  <td className={`py-3 pl-7 pr-1 text-base font-normal whitespace-nowrap`}>
                     {data?.assetType.name}
                   </td>
                 </tr>

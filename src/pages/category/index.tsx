@@ -5,11 +5,11 @@ import { useGetAllCategoryMutation } from "../../store/api/categoryApi";
 import Loader from "../../component/Loader";
 
 const CATEGORY_TABLE_HEAD = [
-  { id: "id", label: "Id"},
-  { id: "name", label: "Name"},
-  { id: "code", label: "Code"},
-  { id: "count", label: "Count"},
-  { id: "assetTypeName", label: "Asset Type"},
+  { id: "id", label: "ID"},
+  { id: "name", label: "NAME"},
+  { id: "code", label: "CODE"},
+  { id: "count", label: "COUNT"},
+  { id: "assetTypeName", label: "ASSET TYPE"},
 ];
 
 const Category = () => {
