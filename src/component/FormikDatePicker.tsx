@@ -1,5 +1,5 @@
 import { useField } from "formik";
-import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
+import Datepicker from "react-tailwindcss-datepicker";
 
 interface DatePickerProps {
   name: string;

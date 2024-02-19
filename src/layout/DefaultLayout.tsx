@@ -3,12 +3,14 @@ import { useState } from 'react';
 import Sidebar from '../component/Sidebar';
 import { Outlet } from 'react-router-dom';
 import Header from '../component/Header';
+import { Toaster } from 'react-hot-toast';
 
 const DefaultLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="dark:bg-boxdark-2 dark:text-bodydark">
+      <Toaster />
       {/* <!-- ===== Page Wrapper Start ===== --> */}
       <div className="flex flex-col h-screen overflow-hidden">
         {/* <!-- ===== Sidebar Start ===== --> */}
@@ -25,7 +27,7 @@ const DefaultLayout = () => {
           {/* <!-- ===== Main Content Start ===== --> */}
           <main>
               <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-            <div className="mx-auto max-h-screen max-w-screen-2xl p-2 md:p-4 2xl:p-8 overflow-y-auto overflow-x-hidden">
+            <div className="mx-auto h-screen max-w-screen-2xl p-2 md:p-4 2xl:p-8 overflow-y-auto overflow-x-hidden">
               <Outlet />
             </div>
           </main>

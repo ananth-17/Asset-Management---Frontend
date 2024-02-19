@@ -1,16 +1,19 @@
-import { Field, Form, Formik } from "formik";
-import { useState } from "react";
+import { ErrorMessage, Field, Form, Formik } from "formik";
+import { useEffect, useState } from "react";
 import * as Yup from 'yup';
 import FormikDatePicker from "../../component/FormikDatePicker";
 import { useNavigate } from "react-router-dom";
 import { useAddNewAssetMutation } from "../../store/api/assetApi";
-import { useAppSelector } from "../../store/hooks";
-import { getAssetTypeData } from "../../store/state/assetTypeSlice";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { getAssetTypeData, setAssetType } from "../../store/state/assetTypeSlice";
+import { useGetCategortByAssetTypeMutation } from "../../store/api/categoryApi";
+import { useGetAssetTypesMutation } from "../../store/api/assetTypeApi";
+import toast from "react-hot-toast";
 
 
 const initialValues = {
   assetTypeId: undefined,
-  categoryId: "",
+  categoryId: undefined,
   brand: "",
   model: "",
   sno: "",
@@ -24,7 +27,9 @@ const initialValues = {
 const assetSchema = Yup.object().shape({
   brand: Yup.string().required('Please Enter Brand').matches(/^[a-zA-Z\s.-]+$/, { message: 'Brand must be alphabetic'}),
   categoryId: Yup.string().required('Please Select Category'),
-  model: Yup.string().required('Please Select Model'),
+  assetTypeId: Yup.string().required('Please Select Asset Type'),
+  model: Yup.string().required('Please Enter Model'),
+  sno: Yup.string().required('Please Enter Serial No'),
   amount: Yup.string().required('Please Enter Amount').matches(/^\d+$/, {message: 'Amount must be numeric'}),
 });
 
@@ -35,9 +40,43 @@ const rightInputBox = "w-full xl:w-1/2 flex flex-row gap-2 xl:mr-25";
 const AddAsset = () => {
 
   const navigate = useNavigate();
-  const assetTypeList = useAppSelector(getAssetTypeData);
+  const dispatch = useAppDispatch();
+  const [ assetTypeList, setAssetTypeList] = useState(useAppSelector(getAssetTypeData));
+  const [ categoryList, setCategoryList] = useState<Array<any>>([]);
+  const [ getAllAssetType, getAllAssetTypeResponse ] = useGetAssetTypesMutation();
   const [ addNewAsset, addNewAssetResponse ] = useAddNewAssetMutation();
+  const [ getCategoryByAssetType, getCategoryByAssetTypeResponse ] = useGetCategortByAssetTypeMutation();
 
+  useEffect(() => {
+    if(assetTypeList === null || assetTypeList.length < 1)
+      getAllAssetType({});
+  },[assetTypeList]);
+
+  useEffect(() => {
+    if(getAllAssetTypeResponse.isSuccess) {
+      let typeList = getAllAssetTypeResponse.data.data;
+      setAssetTypeList(typeList);
+      dispatch(setAssetType(typeList));
+    }
+  },[getAllAssetTypeResponse])
+
+  useEffect(() => {
+    if(getCategoryByAssetTypeResponse.isSuccess) {
+      let typeList = getCategoryByAssetTypeResponse.data.data;
+      setCategoryList(typeList);
+    }
+  },[getCategoryByAssetTypeResponse])
+
+  useEffect(() => {
+    if(addNewAssetResponse.isSuccess) {
+      toast.success('Record added Successfully');
+      navigate('/home/assets');
+    }
+  },[addNewAssetResponse])
+
+  const getCategories = (id: number) => {
+    getCategoryByAssetType({assetTypeId : id});
+  }
 
   const [formValues, setFormValues] = useState(initialValues);
 
@@ -61,9 +100,9 @@ const AddAsset = () => {
                 initialValues={formValues}
                 onSubmit={handleSubmit}
                 onReset={() => {navigate('/home/assets')}}
-                // validationSchema={assetSchema}
+                validationSchema={assetSchema}
               >
-                {({ values, errors, touched }) => (
+                {({ values, errors, handleChange }) => (
                   <Form>
                     <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                       <div className={leftInputBox}>
@@ -86,7 +125,7 @@ const AddAsset = () => {
                         <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
                           Invoice No<span className="text-red">*</span>: 
                         </label>
-                        <Field name="invoiceNo" type="text" value={values.invoiceNo} 
+                        <Field name="invoiceNo" type="text" value={values.invoiceNo}
                           className={inputStyle}/>  
                       </div>
                       <div className={rightInputBox}>
@@ -99,23 +138,33 @@ const AddAsset = () => {
                     </div>
                     <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                       <div className={leftInputBox}>
-                        <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
-                          Category<span className="text-red">*</span>: 
+                      <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
+                          Asset Type<span className="text-red">*</span>:
                         </label>
-                        <Field name="categoryId" type="text" value={values.categoryId} 
-                          className={inputStyle}/>
+                        <Field name="assetTypeId" as="select" value={values.assetTypeId} type="number"
+                          className={inputStyle} onChange={(e:any) => {
+                            handleChange(e);
+                            getCategories(e.target.value);
+                            }}>
+                        <option key={undefined} value={undefined} >Select...</option>
+                          { assetTypeList && assetTypeList.length > 0 &&
+                            assetTypeList.map( data => (
+                              <option key={data.id} value={data.id}>{data.name}</option>
+                            ))}
+                        </Field>
                       </div>
                       <div className={rightInputBox}>
                         <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
-                            Asset Type<span className="text-red">*</span>:
-                          </label>
-                          <Field name="assetTypeId" as="select" value={values.assetTypeId} className={inputStyle}>
+                          Category<span className="text-red">*</span>: 
+                        </label>
+                        <Field name="categoryId" as="select" value={values.categoryId} type="number"
+                          className={inputStyle}>
                           <option key={undefined} value={undefined} >Select...</option>
-                            { assetTypeList && assetTypeList.length > 0 &&
-                              assetTypeList.map( data => (
+                            { categoryList && categoryList.length > 0 &&
+                              categoryList.map( data => (
                                 <option key={data.id} value={data.id}>{data.name}</option>
                               ))}
-                          </Field>
+                        </Field>
                       </div>
                     </div>
                     <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
@@ -163,6 +212,12 @@ const AddAsset = () => {
                         Submit
                       </button>
                     </div>
+                    {errors.assetTypeId && <ErrorMessage name={"assetTypeId"} component="div" className='text-red flex justify-center mt-4'/>}
+                    {errors.brand && <ErrorMessage name={"brand"} component="div" className='text-red flex justify-center mt-4'/>}
+                    {errors.categoryId && <ErrorMessage name={"categoryId"} component="div" className='text-red flex justify-center mt-4'/>}
+                    {errors.model && <ErrorMessage name={"model"} component="div" className='text-red flex justify-center mt-4'/>}
+                    {errors.sno && <ErrorMessage name={"sno"} component="div" className='text-red flex justify-center mt-4'/>}
+                    {errors.amount && <ErrorMessage name={"amount"} component="div" className='text-red flex justify-center mt-4'/>}
                   </Form>
                 )}
               </Formik>

@@ -18,9 +18,18 @@ export const assetApis = createApi({
     addNewAsset: builder.mutation({
       query: body => {
         return {
-          url: "api/asset?",
+          url: "api/asset",
           method: 'POST',
           body
+        };
+      }
+    }),
+    downloadQR: builder.mutation({
+      query: body => {
+        return {
+          url: `api/asset/qr/${body.id}`,
+          method: 'GET',
+          responseType: "arraybuffer"
         };
       }
     }),
@@ -29,5 +38,6 @@ export const assetApis = createApi({
 
 export const {
   useGetAllAssetsMutation,
-  useAddNewAssetMutation
+  useAddNewAssetMutation,
+  useDownloadQRMutation
 } = assetApis;

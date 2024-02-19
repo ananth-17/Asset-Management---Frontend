@@ -24,10 +24,19 @@ export const categoryApi = createApi({
         };
       }
     }),
+    getCategortByAssetType: builder.mutation({
+      query: body => {
+        return {
+          url: "api/category/assetType/" + body.assetTypeId,
+          method: 'GET'
+        };
+      }
+    }),
   })
 });
 
 export const {
   useGetAllCategoryMutation,
-  useAddNewCategoryMutation
+  useAddNewCategoryMutation,
+  useGetCategortByAssetTypeMutation
 } = categoryApi;

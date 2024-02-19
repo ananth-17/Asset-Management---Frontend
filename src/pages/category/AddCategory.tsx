@@ -1,10 +1,12 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
-import { useAppSelector } from '../../store/hooks';
-import { getAssetTypeData } from '../../store/state/assetTypeSlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { getAssetTypeData, setAssetType } from '../../store/state/assetTypeSlice';
 import { useAddNewCategoryMutation } from '../../store/api/categoryApi';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
+import { useGetAssetTypesMutation } from '../../store/api/assetTypeApi';
 
 const initialValues = {
   name: "",
@@ -12,9 +14,9 @@ const initialValues = {
   assetTypeId: undefined
 }
 const categorySchema = Yup.object().shape({
-  name: Yup.string().required('Please Enter Name').matches(/^[a-zA-Z\s.-]+$/, { message: 'Name must be alphabetic'}),
-  code: Yup.string().required('Please Enter Code').matches(/^[a-zA-Z\s.-]+$/, {message: 'Code must be alphabetic'}),
-  assetTypeId: Yup.number().required('Please Select Asset Type')
+  name: Yup.string().required('Please Enter Name').matches(/^[a-zA-Z\s.-]+$/, { message: 'Name must be alphabetic!'}),
+  code: Yup.string().required('Please Enter Code').matches(/^[a-zA-Z\s.-]+$/, {message: 'Code must be alphabetic!'}),
+  assetTypeId: Yup.number().required('Please Select Asset Type!')
 });
 
 const inputStyle = "w-2/3 rounded border-[1.5px] border-stroke bg-transparent py-1 px-2 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary";
@@ -23,14 +25,29 @@ const inputBox = "w-full xl:w-1/3 flex flex-row gap-1";
 const AddCategory = () => {
 
   const navigate = useNavigate();
-  const assetTypeList = useAppSelector(getAssetTypeData);
+  const dispatch = useAppDispatch();
+  const [assetTypeList, setAssetTypeList] = useState(useAppSelector(getAssetTypeData));
+  const [ getAllAssetType, getAllAssetTypeResponse ] = useGetAssetTypesMutation();
   const [ addNewCategory, addNewCategoryResponse ] = useAddNewCategoryMutation();
 
+  useEffect(() => {
+    if(assetTypeList === null || assetTypeList.length < 1)
+      getAllAssetType({});
+  },[assetTypeList]);
+
+  useEffect(() => {
+    if(getAllAssetTypeResponse.isSuccess) {
+      let typeList = getAllAssetTypeResponse.data.data;
+      setAssetTypeList(typeList);
+      dispatch(setAssetType(typeList));
+    }
+  },[getAllAssetTypeResponse])
 
   const [formValues, setFormValues] = useState(initialValues);
 
   const handleSubmit = (values:any) => {
     console.log("Submitted ", values);
+    toast.success('Submitted')
     // addNewCategory(values);
   }
 
@@ -95,7 +112,9 @@ const AddCategory = () => {
                         Submit
                       </button>
                     </div>
-                    {errors && <ErrorMessage name={"assetTypeId"} />}
+                    {errors.assetTypeId && <ErrorMessage name={"assetTypeId"} component="div" className='text-red flex justify-center mt-4'/>}
+                    {errors.name && <ErrorMessage name={"name"} component="div" className='text-red flex justify-center mt-4'/>}
+                    {errors.code && <ErrorMessage name={"code"} component="div" className='text-red flex justify-center mt-4'/>}
                 </Form>
               )}
             </Formik>

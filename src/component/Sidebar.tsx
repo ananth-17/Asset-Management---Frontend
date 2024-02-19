@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import SidebarLinkGroup from './SidebarLinkGroup';
-import Logo from '../images/logo.jpg';
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -12,7 +11,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const location = useLocation();
   const { pathname } = location;
 
-  const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
 
   // const storedSidebarExpanded = localStorage.getItem('sidebar-expanded');

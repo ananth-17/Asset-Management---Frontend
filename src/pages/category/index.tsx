@@ -10,11 +10,13 @@ const CATEGORY_TABLE_HEAD = [
   { id: "code", label: "CODE"},
   { id: "count", label: "COUNT"},
   { id: "assetTypeName", label: "ASSET TYPE"},
+  { id: "action", label: "ACTION"},
 ];
 
 const Category = () => {
   const offset = 5;
   const [isLoading, setIsLoading ] = useState(true);
+  const [error, setError ] = useState(false);
   const [getAllCategory, getAllCategoryResponse] = useGetAllCategoryMutation();
   const [categoryData, setCategoryData] = useState<any>(null);
 
@@ -25,6 +27,10 @@ const Category = () => {
   useEffect(() => {
     if(getAllCategoryResponse.isSuccess) {
       setCategoryData(getAllCategoryResponse.data.data);
+    }
+    if(getAllCategoryResponse.isError) {
+      setIsLoading(false);
+      setError(true);
     }
   },[getAllCategoryResponse.isSuccess]);
 
@@ -42,8 +48,8 @@ const Category = () => {
       <Breadcrumb pageName="Catgeory"/>
       <div className="flex flex-col gap-10 shadow-md">
         {isLoading ?
-              <Loader />
-              : 
+          <Loader />
+          : error ? <></> :
           <CategoryData
             tableData={categoryData}
             getDataBySearch={getCategoryBySearch} 
