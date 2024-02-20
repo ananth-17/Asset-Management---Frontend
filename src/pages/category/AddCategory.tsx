@@ -1,18 +1,13 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { getAssetTypeData, setAssetType } from '../../store/state/assetTypeSlice';
-import { useAddNewCategoryMutation } from '../../store/api/categoryApi';
+import { useAddNewCategoryMutation, useUpdateCategoryMutation } from '../../store/api/categoryApi';
 import { useEffect, useState } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { useGetAssetTypesMutation } from '../../store/api/assetTypeApi';
 
-const initialValues = {
-  name: "",
-  code: "",
-  assetTypeId: undefined
-}
 const categorySchema = Yup.object().shape({
   name: Yup.string().required('Please Enter Name').matches(/^[a-zA-Z\s.-]+$/, { message: 'Name must be alphabetic!'}),
   code: Yup.string().required('Please Enter Code').matches(/^[a-zA-Z\s.-]+$/, {message: 'Code must be alphabetic!'}),
@@ -26,9 +21,29 @@ const AddCategory = () => {
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { state } = useLocation();
+  const { editData, editMode } = state;
+  const [formValues, setFormValues] = useState({
+    id: undefined,
+    name: "",
+    code: "",
+    assetTypeId: undefined
+  });
   const [assetTypeList, setAssetTypeList] = useState(useAppSelector(getAssetTypeData));
   const [ getAllAssetType, getAllAssetTypeResponse ] = useGetAssetTypesMutation();
   const [ addNewCategory, addNewCategoryResponse ] = useAddNewCategoryMutation();
+  const [ updateCategory, updateCategoryResponse ] = useUpdateCategoryMutation();
+
+  useEffect(() => {
+    if(editMode) {
+      setFormValues({
+        id: editData.id,
+        assetTypeId: editData.assetTypeId,
+        name: editData.name,
+        code: editData.code
+      });
+    }
+  },[]);
 
   useEffect(() => {
     if(assetTypeList === null || assetTypeList.length < 1)
@@ -43,12 +58,21 @@ const AddCategory = () => {
     }
   },[getAllAssetTypeResponse])
 
-  const [formValues, setFormValues] = useState(initialValues);
+  useEffect(() => {
+    if(addNewCategoryResponse.isSuccess) {
+      toast.success('Record added Successfully');
+      navigate('/home/category');
+    }
+    if(updateCategoryResponse.isSuccess) {
+      toast.success('Record updated Successfully');
+      navigate('/home/category');
+    }
+  },[addNewCategoryResponse.isSuccess, updateCategoryResponse.isSuccess]);
 
   const handleSubmit = (values:any) => {
     console.log("Submitted ", values);
-    toast.success('Submitted')
-    // addNewCategory(values);
+    if(editMode) updateCategory(values);
+    else addNewCategory(values);
   }
 
   return (
@@ -65,10 +89,9 @@ const AddCategory = () => {
               enableReinitialize
               initialValues={formValues}
               onSubmit={handleSubmit}
-              onReset={() => {navigate('/home/category')}}
               validationSchema={categorySchema}
             >
-              {({ values, errors, touched }) => (
+              {({ values, errors, handleReset }) => (
                 <Form>
                   <div className="mb-4.5 flex flex-col gap-2 xl:flex-row">
                       <div className={inputBox}>
@@ -99,7 +122,10 @@ const AddCategory = () => {
                       </div>
                     </div>
                     <div className="flex justify-end gap-4.5 xl:justify-center xl:gap-8">
-                      <button
+                      <button onClick={(e) => {
+                        handleReset(e);
+                        navigate('/home/category')
+                      }}
                         className="flex justify-center rounded border border-stroke py-1.5 px-4 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
                         type="reset"
                       >

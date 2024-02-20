@@ -2,27 +2,13 @@ import { ErrorMessage, Field, Form, Formik } from "formik";
 import { useEffect, useState } from "react";
 import * as Yup from 'yup';
 import FormikDatePicker from "../../component/FormikDatePicker";
-import { useNavigate } from "react-router-dom";
-import { useAddNewAssetMutation } from "../../store/api/assetApi";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAddNewAssetMutation, useUpdateAssetMutation } from "../../store/api/assetApi";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getAssetTypeData, setAssetType } from "../../store/state/assetTypeSlice";
 import { useGetCategortByAssetTypeMutation } from "../../store/api/categoryApi";
 import { useGetAssetTypesMutation } from "../../store/api/assetTypeApi";
 import toast from "react-hot-toast";
-
-
-const initialValues = {
-  assetTypeId: undefined,
-  categoryId: undefined,
-  brand: "",
-  model: "",
-  sno: "",
-  dop: null,
-  invoiceNo: "",
-  amount: undefined,
-  amcEndDate: "",
-  branchId: 1
-}
 
 const assetSchema = Yup.object().shape({
   brand: Yup.string().required('Please Enter Brand').matches(/^[a-zA-Z\s.-]+$/, { message: 'Brand must be alphabetic'}),
@@ -41,11 +27,47 @@ const AddAsset = () => {
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { state } = useLocation();
+  const { editData, editMode } = state;
+  const [ formValues, setFormValues] = useState({
+    id: undefined,
+    assetTypeId: undefined,
+    categoryId: undefined,
+    brand: "",
+    model: "",
+    sno: "",
+    dop: null,
+    invoiceNo: "",
+    amount: undefined,
+    amcEndDate: null,
+    branchId: 1,
+    tagName: ''
+  });
   const [ assetTypeList, setAssetTypeList] = useState(useAppSelector(getAssetTypeData));
   const [ categoryList, setCategoryList] = useState<Array<any>>([]);
   const [ getAllAssetType, getAllAssetTypeResponse ] = useGetAssetTypesMutation();
   const [ addNewAsset, addNewAssetResponse ] = useAddNewAssetMutation();
   const [ getCategoryByAssetType, getCategoryByAssetTypeResponse ] = useGetCategortByAssetTypeMutation();
+  const [ updateAsset, updateAssetResponse] = useUpdateAssetMutation();
+
+  useEffect(() => {
+    if(editMode) {
+      setFormValues({
+        id: editData.id,
+        assetTypeId: editData.assetTypeId,
+        categoryId: editData.categoryId,
+        brand: editData.brand,
+        model: editData.model,
+        sno: editData.sno,
+        dop: editData.dop,
+        invoiceNo: editData.invoiceNo,
+        amount: editData.amount,
+        amcEndDate: editData.amcEndDate,
+        branchId: editData.branchId,
+        tagName: editData.tagName
+      });
+    }
+  },[]);
 
   useEffect(() => {
     if(assetTypeList === null || assetTypeList.length < 1)
@@ -72,17 +94,20 @@ const AddAsset = () => {
       toast.success('Record added Successfully');
       navigate('/home/assets');
     }
-  },[addNewAssetResponse])
+    if(updateAssetResponse.isSuccess) {
+      toast.success('Record update Successfully');
+      navigate('/home/assets');
+    }
+  },[addNewAssetResponse.isSuccess, updateAssetResponse.isSuccess])
 
   const getCategories = (id: number) => {
     getCategoryByAssetType({assetTypeId : id});
   }
 
-  const [formValues, setFormValues] = useState(initialValues);
-
   const handleSubmit = (values:any) => {
     console.log("Submitted ", values);
-    addNewAsset(values);
+    if(editMode) updateAsset(values);
+    else addNewAsset(values);
   }
 
     return (
@@ -91,7 +116,7 @@ const AddAsset = () => {
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark bg-gray-2">
               <h3 className="font-bold text-black dark:text-white">
-                Add New Asset
+                { !editMode ? "Add New" : "Edit"} Asset
               </h3>
             </div>
             <div className="p-6.5">
@@ -99,24 +124,23 @@ const AddAsset = () => {
                 enableReinitialize
                 initialValues={formValues}
                 onSubmit={handleSubmit}
-                onReset={() => {navigate('/home/assets')}}
                 validationSchema={assetSchema}
               >
-                {({ values, errors, handleChange }) => (
+                {({ values, errors, handleChange, handleReset }) => (
                   <Form>
                     <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                       <div className={leftInputBox}>
                         <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
                           Brand<span className="text-red">*</span>: 
                         </label>
-                        <Field name="brand" type="text" value={values.brand} 
+                        <Field name="brand" type="text" value={values.brand} disabled={editMode}
                           className={inputStyle}/> 
                       </div>
                       <div className={rightInputBox}>
                         <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
                             Model<span className="text-red">*</span>:
                           </label>
-                          <Field name="model" type="text" value={values.model} 
+                          <Field name="model" type="text" value={values.model} disabled={editMode}
                             className={inputStyle}/>  
                       </div>
                     </div>
@@ -125,14 +149,14 @@ const AddAsset = () => {
                         <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
                           Invoice No<span className="text-red">*</span>: 
                         </label>
-                        <Field name="invoiceNo" type="text" value={values.invoiceNo}
+                        <Field name="invoiceNo" type="text" value={values.invoiceNo} disabled={editMode}
                           className={inputStyle}/>  
                       </div>
                       <div className={rightInputBox}>
                         <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
                             Serial No<span className="text-red">*</span>:
                           </label>
-                          <Field name="sno" type="text" value={values.sno} 
+                          <Field name="sno" type="text" value={values.sno} disabled={editMode}
                             className={inputStyle}/>  
                       </div>
                     </div>
@@ -141,7 +165,7 @@ const AddAsset = () => {
                       <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
                           Asset Type<span className="text-red">*</span>:
                         </label>
-                        <Field name="assetTypeId" as="select" value={values.assetTypeId} type="number"
+                        <Field name="assetTypeId" as="select" value={values.assetTypeId} type="number" disabled={editMode}
                           className={inputStyle} onChange={(e:any) => {
                             handleChange(e);
                             getCategories(e.target.value);
@@ -157,7 +181,7 @@ const AddAsset = () => {
                         <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
                           Category<span className="text-red">*</span>: 
                         </label>
-                        <Field name="categoryId" as="select" value={values.categoryId} type="number"
+                        <Field name="categoryId" as="select" value={values.categoryId} type="number" disabled={editMode}
                           className={inputStyle}>
                           <option key={undefined} value={undefined} >Select...</option>
                             { categoryList && categoryList.length > 0 &&
@@ -172,13 +196,13 @@ const AddAsset = () => {
                         <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
                           Date of Purchase<span className="text-red">*</span>: 
                         </label>
-                        <FormikDatePicker name="dop" />
+                        <FormikDatePicker name="dop" disabled={editMode}/>
                       </div>
                       <div className={rightInputBox}>
                         <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
                             AMC End Date:
                           </label>
-                          <FormikDatePicker name="amcEndDate" />
+                          <FormikDatePicker name="amcEndDate" disabled={false}/>
                       </div>
                     </div>
                     <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
@@ -186,20 +210,22 @@ const AddAsset = () => {
                         <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
                           Amount<span className="text-red">*</span>: 
                         </label>
-                        <Field name="amount" type="text" value={values.amount} 
+                        <Field name="amount" type="text" value={values.amount}
                           className={inputStyle}/>  
                       </div>
                       <div className={rightInputBox}>
                         <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
                             Branch<span className="text-red">*</span>:
                           </label>
-                          <Field name="branchId" as="select" value={values.branchId} className={inputStyle}>
+                          <Field name="branchId" as="select" value={values.branchId} className={inputStyle} disabled={editMode}>
                                 <option key={1} value={1}>Chennai One</option>
                           </Field>
                       </div>
                     </div>
                     <div className="flex justify-end gap-4.5 xl:justify-center xl:gap-8">
-                      <button
+                      <button onClick={(e) => {
+                        handleReset(e); 
+                        navigate('/home/assets')}}
                         className="flex justify-center rounded border border-stroke py-1.5 px-4 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
                         type="reset"
                       >

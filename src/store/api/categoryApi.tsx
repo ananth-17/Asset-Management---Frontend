@@ -18,8 +18,17 @@ export const categoryApi = createApi({
     addNewCategory: builder.mutation({
       query: body => {
         return {
-          url: "api/category?",
+          url: "api/category",
           method: 'POST',
+          body
+        };
+      }
+    }),
+    updateCategory: builder.mutation({
+      query: body => {
+        return {
+          url: "api/category",
+          method: 'PUT',
           body
         };
       }
@@ -38,5 +47,6 @@ export const categoryApi = createApi({
 export const {
   useGetAllCategoryMutation,
   useAddNewCategoryMutation,
-  useGetCategortByAssetTypeMutation
+  useGetCategortByAssetTypeMutation,
+  useUpdateCategoryMutation
 } = categoryApi;

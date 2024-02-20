@@ -24,6 +24,15 @@ export const assetApis = createApi({
         };
       }
     }),
+    updateAsset: builder.mutation({
+      query: body => {
+        return {
+          url: "api/asset",
+          method: 'PUT',
+          body
+        };
+      }
+    }),
     downloadQR: builder.mutation({
       query: body => {
         return {
@@ -33,11 +42,21 @@ export const assetApis = createApi({
         };
       }
     }),
+    getAssetById: builder.mutation({
+      query: body => {
+        return {
+          url: "api/asset/" + body.id,
+          method: 'GET',
+        };
+      }
+    }),
   })
 });
 
 export const {
   useGetAllAssetsMutation,
   useAddNewAssetMutation,
-  useDownloadQRMutation
+  useDownloadQRMutation,
+  useGetAssetByIdMutation,
+  useUpdateAssetMutation
 } = assetApis;

@@ -3,6 +3,7 @@ import Breadcrumb from "../../component/Breadcrumb";
 import CategoryData from "../category/CategoryData";
 import { useGetAllCategoryMutation } from "../../store/api/categoryApi";
 import Loader from "../../component/Loader";
+import toast from "react-hot-toast";
 
 const CATEGORY_TABLE_HEAD = [
   { id: "id", label: "ID"},
@@ -29,10 +30,11 @@ const Category = () => {
       setCategoryData(getAllCategoryResponse.data.data);
     }
     if(getAllCategoryResponse.isError) {
+      toast.error(getAllCategoryResponse.error.message)
       setIsLoading(false);
       setError(true);
     }
-  },[getAllCategoryResponse.isSuccess]);
+  },[getAllCategoryResponse]);
 
   useEffect(() => {
     if(categoryData !== null)

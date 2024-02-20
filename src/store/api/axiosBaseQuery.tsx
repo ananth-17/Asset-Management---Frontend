@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import axiosInstance from "./axiosInstance"
 
 const axiosBaseQuery = 
@@ -20,7 +21,7 @@ const axiosBaseQuery =
 			return{
 				error: {
 					status: err.response?.status,
-					data: err.response?.data || err.message
+					message: err.response?.data || err.message
 				}
 			}
 		}

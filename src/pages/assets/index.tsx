@@ -6,6 +6,7 @@ import { useAppDispatch } from "../../store/hooks";
 import { setAssets } from "../../store/state/assetSlice";
 import Loader from "../../component/Loader";
 import ImageModal from "../../component/ImageModal";
+import toast from "react-hot-toast";
 
 const ASSET_TABLE_HEAD = [
   { id: "id", label: "ID"},
@@ -34,12 +35,16 @@ const Assets = () => {
   },[]);
 
   useEffect(() => {
-    console.log("getAllAssetsResponse ", getAllAssetsResponse);
     if(getAllAssetsResponse.isSuccess) {
       dispatch(setAssets(getAllAssetsResponse.data.data));
       setAssetData(getAllAssetsResponse.data.data);
     }
-  },[getAllAssetsResponse.isSuccess]);
+    if(getAllAssetsResponse.isError) {
+      toast.error(getAllAssetsResponse.error.message)
+      setIsLoading(false);
+      setError(true);
+    }
+  },[getAllAssetsResponse]);
 
   useEffect(() => {
     if(assetData !== null)
