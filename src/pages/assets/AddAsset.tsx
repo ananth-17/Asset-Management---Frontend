@@ -114,7 +114,7 @@ const AddAsset = () => {
       <>
         <div className="flex flex-col gap-10">
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark bg-gray-2">
+            <div className="border-b border-stroke py-2 px-6.5 dark:border-strokedark bg-gray-2">
               <h3 className="font-bold text-black dark:text-white">
                 { !editMode ? "Add New" : "Edit"} Asset
               </h3>
@@ -142,6 +142,20 @@ const AddAsset = () => {
                           </label>
                           <Field name="model" type="text" value={values.model} disabled={editMode}
                             className={inputStyle}/>  
+                      </div>
+                    </div>
+                    <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                      <div className={leftInputBox}>
+                        <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
+                          Date of Purchase<span className="text-red">*</span>: 
+                        </label>
+                        <FormikDatePicker name="dop" disabled={editMode}/>
+                      </div>
+                      <div className={rightInputBox}>
+                        <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
+                            AMC End Date:
+                          </label>
+                          <FormikDatePicker name="amcEndDate" disabled={false}/>
                       </div>
                     </div>
                     <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
@@ -189,20 +203,6 @@ const AddAsset = () => {
                                 <option key={data.id} value={data.id}>{data.name}</option>
                               ))}
                         </Field>
-                      </div>
-                    </div>
-                    <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                      <div className={leftInputBox}>
-                        <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
-                          Date of Purchase<span className="text-red">*</span>: 
-                        </label>
-                        <FormikDatePicker name="dop" disabled={editMode}/>
-                      </div>
-                      <div className={rightInputBox}>
-                        <label className="text-right w-1/3 my-auto block text-black dark:text-white whitespace-nowrap">
-                            AMC End Date:
-                          </label>
-                          <FormikDatePicker name="amcEndDate" disabled={false}/>
                       </div>
                     </div>
                     <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">

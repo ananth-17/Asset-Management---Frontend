@@ -55,7 +55,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   return (
     <aside
       ref={sidebar}
-      className={`absolute z-9 flex h-screen w-56 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark  ${
+      className={`absolute z-9 flex h-screen w-50 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark  ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
     >

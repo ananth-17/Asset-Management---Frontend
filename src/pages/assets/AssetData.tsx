@@ -20,7 +20,6 @@ const TableReact = (props: TableProps) => {
   const { totalPages, currentPage, totalRecords } = props.tableData;
   
   const searchProducts = (keyword: string) => {
-    keyword = keyword.toLowerCase();
     setSearchValue(keyword);
     if(keyword.length > 2)
       props.getDataBySearch(keyword, 0, rowsLimit);
@@ -43,7 +42,7 @@ const TableReact = (props: TableProps) => {
   };
   
   return (
-    <div className="min-h-min h-full bg-white flex items-center justify-center pb-8">
+    <div className="min-h-min h-full bg-white flex items-center justify-center pb-4">
       <div className="w-full mt-3">
         <div className="flex justify-between px-4 mt-2 my-6 py-1">
           <div className="px-2 bg-gray-2 py-1 rounded-lg w-[50%] border border-slate-300">
