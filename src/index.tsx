@@ -5,6 +5,18 @@ import './index.css';
 import './satoshi.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { PublicClientApplication  } from '@azure/msal-browser';
+
+
+const pca = new PublicClientApplication({
+  auth :{
+    clientId: 'ab76fee0-bf08-4153-b117-f0bb4c507d27',
+    authority: 'https://login.microsoftonline.com/09d8c2b8-850c-4d96-a486-cbc8dfe86610',
+    redirectUri: '/home',
+    postLogoutRedirectUri: '/'
+  }
+});
+
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -12,7 +24,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <App msalInstance={pca}/>
     </BrowserRouter>
   </React.StrictMode>
 );

@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import assetReducer from './state/assetSlice';
 import assetTypeReducer from './state/assetTypeSlice';
+import userReducer from './state/userSlice';
 import { assetApis } from './api/assetApi';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { assetTypeApi } from './api/assetTypeApi';
@@ -10,6 +11,7 @@ export const store = configureStore({
   reducer: {
     assets: assetReducer,
     assetType: assetTypeReducer,
+    user: userReducer,
     [assetApis.reducerPath]: assetApis.reducer,
     [assetTypeApi.reducerPath]: assetTypeApi.reducer,
     [categoryApi.reducerPath]: categoryApi.reducer

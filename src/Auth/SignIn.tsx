@@ -2,10 +2,18 @@ import { Link, useNavigate } from 'react-router-dom';
 import Logo from "../../src/images/logo.jpg";
 import Microsoft from "../../src/images/microsoft.png";
 import AssetIcon from "../../src/images/ITasset.jpg";
+import { useMsal } from '@azure/msal-react';
 
 
 const SignIn = () => {
     const navigate = useNavigate();
+    const { instance } = useMsal();
+
+    const handleMicrsoftSSO = () => {
+      instance.loginRedirect({
+        scopes: ['user.read']
+      });
+    }
 
   return (
     <>
@@ -108,7 +116,9 @@ const SignIn = () => {
                   />
                 </div>
 
-                 <button className="font-bold text-black flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-3 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
+                <button className="font-bold text-black flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-3 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50"
+                  onClick={handleMicrsoftSSO}
+                >
                   <span>
                     <img src={Microsoft} alt="microsoft" width={24}/>
                   </span>
