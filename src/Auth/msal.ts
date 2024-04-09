@@ -6,7 +6,7 @@ const msalConfig = {
     authority: "https://sts.windows.net/09d8c2b8-850c-4d96-a486-cbc8dfe86610",
   },
   cache: {
-    cacheLocation: "localStorage", // Ensure MSAL is configured to use localStorage
+    cacheLocation: "localStorage",
   },
 };
 

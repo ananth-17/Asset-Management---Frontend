@@ -6,17 +6,17 @@ import { useEffect } from "react";
 import { useMsal } from "@azure/msal-react";
 
 const SignIn = () => {
-  const navigate = useNavigate();
   const { instance, accounts } = useMsal();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (accounts.length > 0) {
-      navigate("/home");
+      navigate("/home/dashboard");
     }
   }, [accounts, navigate]);
 
   const handleLogin = () => {
-    instance.loginPopup().catch((error) => console.error(error));
+    instance.loginRedirect().catch((error) => console.error(error));
   };
 
   return (

@@ -1,22 +1,15 @@
+import { Provider } from "react-redux";
+import "./App.css";
 
-import { Provider } from 'react-redux';
-import './App.css';
+import Router from "./routes";
+import { store } from "./store";
 
-import Router from './routes';
-import { store } from './store';
-import { MsalProvider } from '@azure/msal-react';
-
-
-function App(props : any) {
-  const { msalInstance } = props;
-  
+function App(props: any) {
   return (
     <>
-      <MsalProvider instance={msalInstance}>
-        <Provider store={store}>
-          <Router/>
-        </Provider>
-      </MsalProvider>
+      <Provider store={store}>
+        <Router />
+      </Provider>
     </>
   );
 }

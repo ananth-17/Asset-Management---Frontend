@@ -14,7 +14,6 @@ export function getInitials(name: string | undefined): string {
 }
 
 const DropdownUser = () => {
-  const { instance } = useMsal();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
@@ -54,7 +53,7 @@ const DropdownUser = () => {
 
   const handleSSOLogout = () => {
     instance.logoutPopup();
-  }
+  };
 
   return (
     <div className="relative">
