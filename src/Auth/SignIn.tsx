@@ -1,19 +1,23 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../src/images/logo.jpg";
 import Microsoft from "../../src/images/microsoft.png";
 import AssetIcon from "../../src/images/ITasset.jpg";
-import { useMsal } from '@azure/msal-react';
-
+import { useEffect } from "react";
+import { useMsal } from "@azure/msal-react";
 
 const SignIn = () => {
-    const navigate = useNavigate();
-    const { instance } = useMsal();
+  const navigate = useNavigate();
+  const { instance, accounts } = useMsal();
 
-    const handleMicrsoftSSO = () => {
-      instance.loginRedirect({
-        scopes: ['user.read']
-      });
+  useEffect(() => {
+    if (accounts.length > 0) {
+      navigate("/home");
     }
+  }, [accounts, navigate]);
+
+  const handleLogin = () => {
+    instance.loginPopup().catch((error) => console.error(error));
+  };
 
   return (
     <>
@@ -25,11 +29,9 @@ const SignIn = () => {
                 <img className="dark:hidden" src={Logo} alt="Logo" />
               </Link>
 
-              <p className="2xl:px-20">
-                IT ASSET MANAGEMENT
-              </p>
+              <p className="2xl:px-20">IT ASSET MANAGEMENT</p>
               <span className="inline-block">
-              <img className="dark:hidden" src={AssetIcon} alt="Asset" />
+                <img className="dark:hidden" src={AssetIcon} alt="Asset" />
               </span>
             </div>
           </div>
@@ -112,18 +114,21 @@ const SignIn = () => {
                     type="submit"
                     value="Sign In"
                     className="font-bold w-full cursor-pointer rounded-lg border border-primary bg-primary p-3 text-white transition hover:bg-opacity-90"
-                    onClick={() => {navigate('/home/dashboard')}}
+                    onClick={() => {
+                      navigate("/home/dashboard");
+                    }}
                   />
                 </div>
 
-                <button className="font-bold text-black flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-3 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50"
-                  onClick={handleMicrsoftSSO}
+                <button
+                  className="font-bold text-black flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-3 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50"
+                  onClick={handleLogin}
                 >
                   <span>
-                    <img src={Microsoft} alt="microsoft" width={24}/>
+                    <img src={Microsoft} alt="microsoft" width={24} />
                   </span>
                   Sign in with Microsoft
-                </button> 
+                </button>
 
                 {/* <div className="mt-6 text-center">
                   <p>

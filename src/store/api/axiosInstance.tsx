@@ -1,15 +1,21 @@
 import axios from "axios";
+import { getAccessToken } from "./../../lib/utils";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8080/"
+  baseURL: "http://localhost:8080/",
 });
 
 //Add request interceptor
 axiosInstance.interceptors.request.use(
-  (config: any) => {
+  async (config: any) => {
     console.log("request ", config);
-    // You can modify the request config here, e.g., add authentication headers
-    // config.headers.Authorization = `Bearer ${getToken()}`
+    const accessToken = await getAccessToken();
+    if (!accessToken) {
+      // You can modify the request config here, e.g., add authentication headers
+      // config.headers.Authorization = `Bearer ${getToken()}`
+      return config;
+    }
+    config.headers.Authorization = `Bearer ${accessToken}`;
     return config;
   },
   (error: any) => {
@@ -31,18 +37,19 @@ axiosInstance.interceptors.response.use(
 );
 
 const httpErrorHandler = (error: any) => {
-  if(error === null) throw new Error('Unrecoverable error!! Error is null');
-  if(axios.isAxiosError(error)) {
+  if (error === null) throw new Error("Unrecoverable error!! Error is null");
+  if (axios.isAxiosError(error)) {
     const response = error?.response;
 
-    if(response) {
+    if (response) {
       const statusCode = response?.status;
-      if(statusCode === 401) {
-        console.log('Please login to access the resource');
+      if (statusCode === 401) {
+        console.log("Please login to access the resource");
+        window.location.href = "/";
       }
     }
   }
   console.log(error.message);
-}
+};
 
 export default axiosInstance;
