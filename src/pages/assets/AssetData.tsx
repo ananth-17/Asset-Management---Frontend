@@ -238,6 +238,16 @@ const TableReact = (props: TableProps) => {
                   <td
                     className={`py-3 pl-7 pr-1 text-base font-normal whitespace-nowrap`}
                   >
+                    {data?.assetStatus}
+                  </td>
+                  <td
+                    className={`py-3 pl-7 pr-1 text-base font-normal whitespace-nowrap`}
+                  >
+                    {data?.assignToName}
+                  </td>
+                  <td
+                    className={`py-3 pl-7 pr-1 text-base font-normal whitespace-nowrap`}
+                  >
                     <div className="flex flex-row gap-4">
                       <button
                         className="group relative"
